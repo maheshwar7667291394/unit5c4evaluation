@@ -1,0 +1,170 @@
+Enter password: ********
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 15
+Server version: 8.0.30 MySQL Community Server - GPL
+
+Copyright (c) 2000, 2022, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> create database mahesh;
+Query OK, 1 row affected (0.26 sec)
+
+mysql> use mahesh;
+Database changed
+mysql> create table Department(id int primary key,name varchar(15));
+Query OK, 0 rows affected (0.28 sec)
+
+mysql> desc Department;
++-------+-------------+------+-----+---------+-------+
+| Field | Type        | Null | Key | Default | Extra |
++-------+-------------+------+-----+---------+-------+
+| id    | int         | NO   | PRI | NULL    |       |
+| name  | varchar(15) | YES  |     | NULL    |       |
++-------+-------------+------+-----+---------+-------+
+2 rows in set (0.03 sec)
+
+mysql> create table Employee
+    -> desc department;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'desc department' at line 2
+mysql> desc department;
++-------+-------------+------+-----+---------+-------+
+| Field | Type        | Null | Key | Default | Extra |
++-------+-------------+------+-----+---------+-------+
+| id    | int         | NO   | PRI | NULL    |       |
+| name  | varchar(15) | YES  |     | NULL    |       |
++-------+-------------+------+-----+---------+-------+
+2 rows in set (0.00 sec)
+
+mysql> create table Employee(id primary key,name varchar(15),salary int,departmentId int,foreign key(departmentid) references department(id));
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'primary key,name varchar(15),salary int,departmentId int,foreign key(departmenti' at line 1
+mysql> create table Employee(id int primary key,name varchar(15),salary int,departmentId int,foreign key(departmentid) references department(id));
+Query OK, 0 rows affected (0.28 sec)
+
+mysql> desc employee;desc department;
++--------------+-------------+------+-----+---------+-------+
+| Field        | Type        | Null | Key | Default | Extra |
++--------------+-------------+------+-----+---------+-------+
+| id           | int         | NO   | PRI | NULL    |       |
+| name         | varchar(15) | YES  |     | NULL    |       |
+| salary       | int         | YES  |     | NULL    |       |
+| departmentId | int         | YES  | MUL | NULL    |       |
++--------------+-------------+------+-----+---------+-------+
+4 rows in set (0.01 sec)
+
++-------+-------------+------+-----+---------+-------+
+| Field | Type        | Null | Key | Default | Extra |
++-------+-------------+------+-----+---------+-------+
+| id    | int         | NO   | PRI | NULL    |       |
+| name  | varchar(15) | YES  |     | NULL    |       |
++-------+-------------+------+-----+---------+-------+
+2 rows in set (0.01 sec)
+
+mysql> insert into employee values(1,"Joe",85000,1);
+ERROR 1452 (23000): Cannot add or update a child row: a foreign key constraint fails (`mahesh`.`employee`, CONSTRAINT `employee_ibfk_1` FOREIGN KEY (`departmentId`) REFERENCES `department` (`id`))
+mysql> insert into department values(1,"It");
+Query OK, 1 row affected (0.32 sec)
+
+mysql> insert into department values(2,"sales");
+Query OK, 1 row affected (0.09 sec)
+
+mysql> select *from department;
++----+-------+
+| id | name  |
++----+-------+
+|  1 | It    |
+|  2 | sales |
++----+-------+
+2 rows in set (0.00 sec)
+
+mysql> insert into employee(1,"Joe",85000,1);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '1,"Joe",85000,1)' at line 1
+mysql> insert into employee values(1,"Joe",85000,1);
+Query OK, 1 row affected (0.09 sec)
+
+mysql>  insert into employee values(2,"Henry",80000,2);
+Query OK, 1 row affected (0.02 sec)
+
+mysql> insert into employee values(3,"Sam",60000,2);
+Query OK, 1 row affected (0.02 sec)
+
+mysql>  insert into employee values(3,"Max",90000,1);
+ERROR 1062 (23000): Duplicate entry '3' for key 'employee.PRIMARY'
+mysql>  insert into employee values(4,"Max",90000,1);
+Query OK, 1 row affected (0.09 sec)
+
+mysql> insert into employee values(5," Janet",69000,1);
+Query OK, 1 row affected (0.05 sec)
+
+mysql>  insert into employee values(6,"Randy",85000,1);
+Query OK, 1 row affected (0.05 sec)
+
+mysql>  insert into employee values(7,"Will",70000,1);
+Query OK, 1 row affected (0.01 sec)
+
+mysql> select*from employee;
++----+--------+--------+--------------+
+| id | name   | salary | departmentId |
++----+--------+--------+--------------+
+|  1 | Joe    |  85000 |            1 |
+|  2 | Henry  |  80000 |            2 |
+|  3 | Sam    |  60000 |            2 |
+|  4 | Max    |  90000 |            1 |
+|  5 |  Janet |  69000 |            1 |
+|  6 | Randy  |  85000 |            1 |
+|  7 | Will   |  70000 |            1 |
++----+--------+--------+--------------+
+7 rows in set (0.00 sec)
+
+mysql> create table jointable(select *from employee where department id=1 or departmentid=2 orderby salary limit 3);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'id=1 or departmentid=2 orderby salary limit 3)' at line 1
+mysql> select department.name,employee.name,salary from employee inner join department where employee.departmentid=department.id;
++-------+--------+--------+
+| name  | name   | salary |
++-------+--------+--------+
+| It    | Joe    |  85000 |
+| It    | Max    |  90000 |
+| It    |  Janet |  69000 |
+| It    | Randy  |  85000 |
+| It    | Will   |  70000 |
+| sales | Henry  |  80000 |
+| sales | Sam    |  60000 |
++-------+--------+--------+
+7 rows in set (0.00 sec)
+
+mysql>  select department.name,employee.name,salary from employee inner join department where employee.departmentid=department.id order bysalary desc limit 3;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'bysalary desc limit 3' at line 1
+mysql>  select department.name,employee.name,salary from employee inner join department where employee.departmentid=department.id order by salary desc limit 3;
++------+-------+--------+
+| name | name  | salary |
++------+-------+--------+
+| It   | Max   |  90000 |
+| It   | Randy |  85000 |
+| It   | Joe   |  85000 |
++------+-------+--------+
+3 rows in set (0.08 sec)
+
+mysql>  select department.name,employee.name,salary from employee inner join department where employee.departmentid(limit 3)=department.id order by salary desc;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'limit 3)=department.id order by salary desc' at line 1
+mysql> create table 1stdep( select department.name,employee.name,salary from employee inner join department where employee.departmentid=1 order by salary desc limit 3;);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ')' at line 1
+mysql> select department.name,employee.name,salary from employee inner join department where employee.departmentid=department.id;
++-------+--------+--------+
+| name  | name   | salary |
++-------+--------+--------+
+| It    | Joe    |  85000 |
+| It    | Max    |  90000 |
+| It    |  Janet |  69000 |
+| It    | Randy  |  85000 |
+| It    | Will   |  70000 |
+| sales | Henry  |  80000 |
+| sales | Sam    |  60000 |
++-------+--------+--------+
+7 rows in set (0.00 sec)
+
+mysql>
